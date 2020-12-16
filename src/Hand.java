@@ -41,8 +41,12 @@ public class Hand {
         }
     }
 
-    public List<Card> getHand() {
-        List<Card> returns = cards;
+    public List<String> getHand() {
+        List<Card> temp = cards;
+        List<String> returns = new ArrayList<>();
+        for(Card i : temp) {
+            returns.add(i.toString());
+        }
         return returns;
     }
 
