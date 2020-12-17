@@ -52,7 +52,7 @@ public class BlackJack {
                     if (i == temp.toCharArray().length) {
                         try {
                             chips = Integer.parseInt(temp);
-                            if(chips <= 0) {
+                            if(chips > 0) {
                                 checkb = true;
                             } else {
                                 System.out.println("\nNumber needs to be greater than 0.");
