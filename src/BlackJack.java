@@ -24,7 +24,7 @@ public class BlackJack {
         this.whoseTurn = "P";
         this.in = new Scanner(System.in);
         this.check = -1;
-        chips = 25;
+        chips = 0;
         checkb = false;
         stand = false;
         endgame = false;
@@ -35,6 +35,34 @@ public class BlackJack {
 
     public void play() {
         do {
+            String temp;
+            if (chips == 0) {
+                do {
+                    int i = 0;
+                    System.out.print("\nHow many chips would you like to buy in for: ");
+                    temp = in.nextLine();
+
+                    for (char c : temp.toCharArray()) {
+                        i++;
+                        if (!Character.isDigit(c)) {
+                            System.out.println("\nPlease enter a valid integer!");
+                            break;
+                        }
+                    }
+                    if (i == temp.toCharArray().length) {
+                        try {
+                            chips = Integer.parseInt(temp);
+                            if(chips <= 0) {
+                                checkb = true;
+                            } else {
+                                System.out.println("\nNumber needs to be greater than 0.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("\nInput too large or not a valid input.");
+                        }
+                    }
+                } while (checkb = false);
+            }
             insurance = false;
             tempS = "P";
             if (chips == 0) {
@@ -48,7 +76,7 @@ public class BlackJack {
                     stand = false;
                     endgame = false;
                     System.out.print("\nCurrent chips: " + chips + "\nWager: ");
-                    String temp = in.nextLine();
+                    temp = in.nextLine();
                     if (!temp.isEmpty()) {
                         try {
                             check = Integer.parseInt(temp);
@@ -71,7 +99,6 @@ public class BlackJack {
                 shuffleAndDeal();
 
                 if (String.valueOf(dealer.getHand().get(1).charAt(0)).equals("A")) {
-                    String temp;
                     do {
                         System.out.println("\nDEALER hand: [], " + dealer.getHand().subList( 1, dealer.getHand().size()).toString().replaceAll("\\[", "").replaceAll("\\]",""));
                         System.out.println("\nPLAYER hand: [], " + player.getHand().subList( 1, player.getHand().size()).toString().replaceAll("\\[", "").replaceAll("\\]",""));
@@ -79,7 +106,7 @@ public class BlackJack {
                         temp = in.nextLine();
                     } while (!temp.equals("Y") && !temp.equals("N"));
                     if (temp.equals("Y")) {
-                        if (wager / 2 > chips) {
+                        if (wager / 2 > (chips - wager)) {
                             System.out.println("You do not have enough chips to buy insurance.");
                         } else if (temp.equals("N")) {
                             sideBet = wager/2;
@@ -134,13 +161,13 @@ public class BlackJack {
                 if (dealer.getTotal() != 21 && player.getTotal() != 21) {
                     while (endgame == false) {
                         if (dealer.getTotal() < 21 && player.getTotal() < 21) {
-                            if (whoseTurn.equals("P")) {
+                            if (whoseTurn.equals("P") && stand == false) {
                                 whoseTurn = takeTurn(false);
                             } else if (whoseTurn.equals("D")) {
                                 whoseTurn = takeTurn(true);
                             }
                         }
-                        if (player.getTotal() >= 21 || dealer.getTotal() >= 21 || stand == true) {
+                        if (player.getTotal() > 21 || dealer.getTotal() >= 21 || stand == true || (player.getTotal() == 21 && player.getHand().size() == 2)) {
                             if ((player.getTotal() >= 21 || dealer.getTotal() >= 21) && stand == false) {
                                 end();
                                 do {
@@ -179,16 +206,16 @@ public class BlackJack {
             do {
                 showHand(true);
                 showHand(false);
-                System.out.print("(D)raw or (S)tand: ");
+                System.out.print("(H)it or (S)tand: ");
                 temp = in.nextLine();
-            }while (!temp.equals("D") && !temp.equals("S"));
+            }while (!temp.equals("H") && !temp.equals("S"));
 
-            if (temp.equals("D")) {
+            if (temp.equals("H")) {
                 player.takeCard(deck.remove(0));
             } else if (temp.equals("S")) {
                 stand = true;
             }
-            return "D";
+            return "P";
         } else {
             if (dealer.getTotal() < 17) {
                 dealer.takeCard(deck.remove(0));
@@ -202,12 +229,12 @@ public class BlackJack {
             System.out.println("\nYou tied! No reward! These are the ending hands:\n");
             System.out.println("\nDEALER hand: " + dealer.getHand().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             System.out.println("\nPLAYER hand: " + player.getHand().toString().replaceAll("\\[", "").replaceAll("\\]",""));
-        } else if (player.getTotal() == 21) {
+        } else if (player.getTotal() == 21 && player.getHand().size() == 2) {
             System.out.println("\nBlackJack! Your payoff is 3:2! These are the ending hands:\n");
             System.out.println("\nDEALER hand: " + dealer.getHand().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             System.out.println("\nPLAYER hand: " + player.getHand().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             chips += (wager * 1.5);
-        }  else if(dealer.getTotal() == 21) {
+        }  else if(dealer.getTotal() == 21 && dealer.getHand().size() == 2) {
             System.out.println("\nYou lose! You lost your wager! These are the ending hands:\n");
             System.out.println("\nDEALER hand: " + dealer.getHand().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             System.out.println("\nPLAYER hand: " + player.getHand().toString().replaceAll("\\[", "").replaceAll("\\]",""));
